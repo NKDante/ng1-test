@@ -10,7 +10,7 @@ app
         controller: ['$interval', controllerForToDoComponent],
         bindings: {
             items: '<',
-            totalCount: '<',
+            totalCount: '<'
         }
     })
     .service('backend', ['$http', '$q', backendService])
