@@ -11,7 +11,6 @@ app
         bindings: {
             items: '<',
             totalCount: '<',
-            maxId: '<'
         }
     })
     .service('backend', ['$http', '$q', backendService])
@@ -34,7 +33,7 @@ function templateForMainComponent() {
         'ng-style="{\'border\': $ctrl.inputError ? \'3px solid red\' : \'\'}" ',
         'ng-model-options="{\'debounce\': 200}" ',
         'ng-change="$ctrl.submitFilter()">',
-        '<to-do items="$ctrl.items" total-count="$ctrl.totalCount" max-id="$ctrl.maxId"></to-do>'
+        '<to-do items="$ctrl.items" total-count="$ctrl.totalCount"></to-do>'
     ].join("");
 }
 
@@ -89,7 +88,6 @@ function controllerForMainComponent(backend) {
             .then(function (response) {
                 ctrl.items = response.data.items;
                 ctrl.totalCount = response.data.total_count;
-                ctrl.maxId = getMaxId(ctrl.items);
                 ctrl.loading = false;
                 ctrl.loadingError = false;
             })
@@ -101,19 +99,6 @@ function controllerForMainComponent(backend) {
                     ctrl.loadingError = true;
                 }
             });
-    }
-
-    /**
-     * получаем максимальный id
-     * @param items
-     * @returns {string}
-     */
-    function getMaxId(items) {
-        var ids = items.map(function (item) {
-            return item.id;
-        });
-
-        return ids.length > 0 ? Math.max.apply(null, ids) : '-';
     }
 }
 
@@ -153,6 +138,7 @@ function controllerForToDoComponent($interval) {
     this.$onChanges = function (changes) {
         if (changes.items && !changes.items.isFirstChange()) {
             ctrl.todosLength = changes.items.currentValue.length;
+            ctrl.maxId = getMaxId(ctrl.items);
         }
     };
 
@@ -164,6 +150,19 @@ function controllerForToDoComponent($interval) {
 
     function selectId(item) {
         ctrl.selectedId = item.id;
+    }
+
+    /**
+     * получаем максимальный id
+     * @param items
+     * @returns {string}
+     */
+    function getMaxId(items) {
+        var ids = items.map(function (item) {
+            return item.id;
+        });
+
+        return ids.length > 0 ? Math.max.apply(null, ids) : '-';
     }
 }
 
